@@ -1,9 +1,39 @@
 [project]
 name = "invariant-kalman-filter"
 version = "0.1.0"
-description = "Add your description here"
+description = "An implmentation of the invariant kalman filter "
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "filterpy>=1.4.5",
     "numpy>=2.4.2",
+    "sympy>=1.14.0",
 ]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0.2",
+    "sophuspy>=1.2.0",
+]
+
+[tool.ruff]
+exclude= ["bags",
+          ".git"]
+
+[tool.ruff.lint]
+select = []
+ignore = []
+
+fixable = ["all"]
+unfixable = []
+
+
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
+skip-magic-trailing-comma = false
+
+line-ending = "auto"
+

@@ -1,7 +1,7 @@
 import numpy as np
 from numpy import ndarray
 from math import sin, cos
-from typing impor Callable
+from typing import Callable
 
 lie_tolerance:float = 1e-6
 norm:Callable = np.linalg.norm
@@ -45,7 +45,7 @@ def exp_so3(v: np.ndarray)-> np.ndarray:
         return np.identity(3) + sin_theta * A  + .5 * sin_theta * A * A # taylor expansion
 
 
-def exp_se3(v: np.ndarray)-> np.ndarray:
+def exp_se3(v: np.ndarray, tolerance=lie_tolerance)-> np.ndarray:
     """conver transfomration matrix to its adjoint representation
     Args:
         T (np.ndarray(shape=6,1), dim=2): Trnasformation Matrix
@@ -53,21 +53,21 @@ def exp_se3(v: np.ndarray)-> np.ndarray:
     Returns:
         np.ndarray(shape=(6,6)): adjoint se3 matrix
     """
-    se3_mat:np.ndarray = np.eye(4)
+    identity = np.eye(4)
+    T:np.ndarray = np.eye(4)
     rho: np.ndarray = v[:3]
     phi: np.ndarray = v[3:]
     so3_skew = exp_so3(phi)
-
     theta: float = norm(phi)
     sin_theta = np.sin(theta)
     cos_theta = np.cos(theta)
 
     if theta < tolerance:
-        J =  identity * 0.5 * so3 skew
+        J = identity * 0.5 * so3_skew
     else:
         ax = phi/theta
         K = skew(phi)
-        J =  (sin_theta/theta) * np.eye(3)  + (1 - sin_theta/theta) * np.outer(ax, ax)) + ((1- cos_theta)/ theta) * K
+        J = (sin_theta/theta) * (np.eye(3)  + (1 - sin_theta/theta) * np.outer(ax, ax)) + ((1- cos_theta)/ theta) * K
 
     t = J @ rho
     T[:3, :3] = so3_skew

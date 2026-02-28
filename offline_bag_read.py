@@ -41,7 +41,7 @@ class ImuOdometryBagReader:
 
     def iterate_next(self) -> tuple[MsgTypeReturn, float]:
         self._current_msg_count = self._current_msg_count + 1
-        if self.sequential_reader.has_next():
+        if not self.sequential_reader.has_next():
             return (None, -1.0)
         topic, data, timestamp = self.sequential_reader.read_next()
         msg_type: Type[Imu, Odometry] = get_message(self.type_map[topic])
@@ -57,15 +57,12 @@ class ImuOdometryBagReader:
                 msg_count = msg_count + topic_.message_count
         return msg_count
 
-    def __next__(self):
-        self.iterate_next()
-
-
 @dataclass(slots=True)
 class StampedMsg:
     time: float
     msg: Union[Odometry, Imu]
 
+    @property
     def msg_type(self) -> Type[Odometry | Imu]:
         return type(self.msg)
 
@@ -78,7 +75,7 @@ class TimeAlignedBagFeeder:
 
     @property
     def size(self):
-        return self.bag_reader.size()
+        return self.bag_reader.size
 
     @property
     def current_msg_count(self):
@@ -92,22 +89,11 @@ class TimeAlignedBagFeeder:
         elif isinstance(msg, Odometry):
             return StampedMsg(timestamp, msg)
         else:
-            if timestamp < 0.0:
-                return None
-            raise ValueError("Another Topic in the bag")
+            return None
 
     def __len__(self):
         return self.size
 
     def __iter__(self):
-        return self
-
-    def __next__(self):
-        try:
-            value = self.next_msg_in_lidar_time()
-            if isinstance(value, StampedMsg):
-                return value
-            else:
-                raise StopIteration()
-        except ValueError:
-            raise StopIteration()
+        while (msg:= self.next_msg_in_lidar_time()) is not None:
+            yield msg

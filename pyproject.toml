@@ -7,11 +7,15 @@ requires-python = ">=3.12"
 dependencies = [
     "filterpy>=1.4.5",
     "numpy>=2.4.2",
+    "pyridescence>=1.0.1",
     "sympy>=1.14.0",
+    "tqdm>=4.67.3",
+    "typer>=0.24.1",
 ]
 
 [dependency-groups]
 dev = [
+    "pypose>=0.7.5",
     "pytest>=9.0.2",
     "sophuspy>=1.2.0",
 ]

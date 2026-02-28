@@ -63,11 +63,11 @@ def exp_se3(v: np.ndarray, tolerance=lie_tolerance)-> np.ndarray:
     cos_theta = np.cos(theta)
 
     if theta < tolerance:
-        J = identity * 0.5 * so3_skew
+        J =  identity * 0.5 * so3_skew
     else:
         ax = phi/theta
         K = skew(phi)
-        J = (sin_theta/theta) * (np.eye(3)  + (1 - sin_theta/theta) * np.outer(ax, ax)) + ((1- cos_theta)/ theta) * K
+        J =  (sin_theta/theta) * np.eye(3)  + (1 - sin_theta/theta) * np.outer(ax, ax) + ((1- cos_theta)/ theta) * K
 
     t = J @ rho
     T[:3, :3] = so3_skew
@@ -78,7 +78,7 @@ def exp_se3(v: np.ndarray, tolerance=lie_tolerance)-> np.ndarray:
 def adjoint_se3(v:np.ndarray):
     """conver transfomration matrix to its adjoint representation
     Args:
-        T (np.ndarray(shape=6,1), dim=2): Trnasformation Matrix
+        T (np.ndarray(shape=6,1), dim=2): Transformation Matrix
 
     Returns:
         np.ndarray(shape=(6,6)): adjoint se3 matrix

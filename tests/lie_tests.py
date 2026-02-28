@@ -1,7 +1,7 @@
 import unittest
 import random
-from numpy import np
-from lie_algebra import skew, exp_so3, exp_se3, adj_se3
+import numpy as np 
+from  invariant_ekf.lie_algebra import skew, exp_so3, exp_se3, adjoint_se3
 import sophuspy as sp
 np.random.seed(42)
 
@@ -43,13 +43,14 @@ class FuzzyExponentialMapLieGroupTests(unittest.TestCase):
             assertTrue(sophus_is_close(tf_sophus_list[i], result_matrix[i]))
 
 
-class FuzzyAdjointSE3Tests(unitest.TestCase):
+class FuzzyAdjointSE3Tests(unittest.TestCase):
     def fuzz_adjoint_SE3():
         test_vectors: np.ndarray = generate_se3_tangent_space_vectors(num_fuzz_cases)
         result_buffer: np.ndarray = np.zeros((num_fuzz_cases, 6, 6))
-        sophus_buffer: np.ndarray = np.zeros(num_fuzz_cases, 6, 6))
+        sophus_buffer: np.ndarray = np.zeros((num_fuzz_cases, 6, 6))
 
         def assemble_adjoint(v:np.ndarray) -> np.ndarray:
+            """hand assembly of the adjoint matrix for"""
             adjoint_mat = np.zeros(6,6)
             se3: sp.SE3 = sp.SE3.exp(v)
             R = se3.rotationMatrix()
@@ -58,11 +59,15 @@ class FuzzyAdjointSE3Tests(unitest.TestCase):
             adjoint_mat[:3, 3:] = sp.so3.hat(t) * R
             adjoint_mat[3:, 3:] = R
             return adjoint_mat
+
+
         for i in range(num_fuzz_cases):
             result_buffer[i] = adjoint_se3(test_vector[i])
-            sophus_buffer[i] = assemble_adjoint(test_vector[i]))
+            sophus_buffer[i] = assemble_adjoint(test_vector[i])
         for i in range(num_fuzz_cases):
             assertTrue(sophus_is_close(tf_sophus_list[i], result_matrix[i]))
         
 
-
+if __name__ == "__main__":
+    unitetest.main()
+    

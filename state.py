@@ -40,6 +40,7 @@ class RobotState:
     _velocity: np.ndarray = field(default_factory=lambda: np.zeros(3, dtype=np.float64))
     _acceleration_bias: np.ndarray = field(default_factory=lambda: np.zeros(3, dtype=np.float64))
     _angular_velocity_bias: np.ndarray = field(default_factory=lambda: np.zeros(3, dtype=np.float64))
+    _acceleration_noise: np.ndarray = field(default_factory=lambda: np.zeros(3, dtype=np.float64))
 
 
     def __post_init__(self):
@@ -48,14 +49,21 @@ class RobotState:
         except:
             self._orientation[3] = 1.0
             self._orientation = Rotation.from_quat(self._orientation).as_quat() # normalize quaternion
-
-
         assert self._orientation.shape == (4,)
         assert self._position.shape == (3,)
         assert self._velocity.shape == (3,)
         assert self._acceleration_bias.shape == (3,)
         assert self._angular_velocity_bias.shape == (3,)
 
+    def get_state_matrix() -> np.ndarray:
+        R =  Rotation.from_quat(self._orientation).as_matrix()
+        p = self._positon
+        v = self._velocity
+        state_mat = np.identity(5)
+        state_mat[:3,:3] = R
+        sate_mat[:3,3] = p
+        sate_mat[:3,4] = v
+        return state_mat
 
     def convertToPyPose(self) -> list[torch.Tensor]:
         pass
